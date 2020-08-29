@@ -17,6 +17,8 @@ Please feel free to donate. All donations go to making more free DCS utilities a
 https://www.paypal.com/paypalme/asherao
 Enjoy!
 
+If you would like to examine, follow, or add to DReLa, the github is here: https://github.com/asherao/DCS-Resolution-Launcher--DReLa-
+
 ~Bailey
 
 29AUG2020
