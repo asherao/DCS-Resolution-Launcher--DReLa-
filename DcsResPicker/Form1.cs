@@ -19,6 +19,7 @@ using System.Windows.Forms;
  */
 
 //sources
+//https://docs.microsoft.com/en-us/visualstudio/ide/how-to-specify-an-application-icon-visual-basic-csharp?view=vs-2019
 //https://www.geeksforgeeks.org/c-sharp-string-contains-method/
 //https://stackoverflow.com/questions/15582441/how-to-get-index-of-word-inside-a-string
 //https://www.geeksforgeeks.org/c-sharp-string-indexof-method-set-1/#:~:text=In%20C%23%2C%20IndexOf()%20method,or%20string%20is%20not%20found.
