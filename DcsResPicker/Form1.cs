@@ -275,12 +275,16 @@ namespace DcsResPicker
                 + "5. Right before DCS launches, DReLa will edit your options.lua and save your settings in a text file in the location of this application." +
                 " The next time you run the program you won't have to set the DCS and options.lua paths."
                 + "\r\n" + "\r\n"
-                + " Thank you to Captian Bird of the Hoggit Discord for the tips and idea for this utility. If you have any comments, concerns, wishes," +
+                + "Thank you to Captian Bird of the Hoggit Discord for the tips and idea for this utility. If you have any comments, concerns, wishes," +
                 " or just want to say Hi, contact me via Discord: Bailey#6230." +
                 "\r\n" +
                 "Please feel free to donate. All donations go to making more free DCS utilities and mods for the community! " +
-                " https://www.paypal.com/paypalme/asherao" + "\r\n"
-                + "Enjoy!" + "\r\n" + "\r\n" + "~Bailey" + "\r\n" + "29AUG2020"
+                " https://www.paypal.com/paypalme/asherao" + "\r\n" + "\r\n"
+                + "Enjoy!" + "\r\n"+ "\r\n"+
+
+                "If you would like to examine, follow, or add to DReLa, the git is here: https://github.com/asherao/DCS-Resolution-Launcher--DReLa-" +
+
+                "\r\n" + "\r\n" + "~Bailey" + "\r\n" + "29AUG2020"
                 );
         }
 
