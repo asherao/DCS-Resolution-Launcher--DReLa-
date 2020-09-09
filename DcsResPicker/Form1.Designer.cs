@@ -61,6 +61,8 @@
             this.button8_launchDCS = new System.Windows.Forms.Button();
             this.groupBox3_customResolution = new System.Windows.Forms.GroupBox();
             this.groupBox4_pickResolution = new System.Windows.Forms.GroupBox();
+            this.comboBox2_monitorLuaPicker = new System.Windows.Forms.ComboBox();
+            this.label1_testLabel = new System.Windows.Forms.Label();
             this.groupBox1_presetResolutions.SuspendLayout();
             this.groupBox2_customResolution.SuspendLayout();
             this.groupBox3_customResolution.SuspendLayout();
@@ -392,11 +394,33 @@
             this.groupBox4_pickResolution.TabStop = false;
             this.groupBox4_pickResolution.Text = "Pick Resolution";
             // 
+            // comboBox2_monitorLuaPicker
+            // 
+            this.comboBox2_monitorLuaPicker.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox2_monitorLuaPicker.FormattingEnabled = true;
+            this.comboBox2_monitorLuaPicker.Location = new System.Drawing.Point(9, 347);
+            this.comboBox2_monitorLuaPicker.Name = "comboBox2_monitorLuaPicker";
+            this.comboBox2_monitorLuaPicker.Size = new System.Drawing.Size(209, 21);
+            this.comboBox2_monitorLuaPicker.Sorted = true;
+            this.comboBox2_monitorLuaPicker.TabIndex = 23;
+            this.comboBox2_monitorLuaPicker.SelectedIndexChanged += new System.EventHandler(this.comboBox2_monitorLuaPicker_SelectedIndexChanged);
+            // 
+            // label1_testLabel
+            // 
+            this.label1_testLabel.AutoSize = true;
+            this.label1_testLabel.Location = new System.Drawing.Point(6, 331);
+            this.label1_testLabel.Name = "label1_testLabel";
+            this.label1_testLabel.Size = new System.Drawing.Size(214, 13);
+            this.label1_testLabel.TabIndex = 26;
+            this.label1_testLabel.Text = "Select Monitor.Lua (If unsure, don\'t touch!!!)";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(227, 323);
+            this.ClientSize = new System.Drawing.Size(226, 380);
+            this.Controls.Add(this.label1_testLabel);
+            this.Controls.Add(this.comboBox2_monitorLuaPicker);
             this.Controls.Add(this.label7_pickRes);
             this.Controls.Add(this.groupBox4_pickResolution);
             this.Controls.Add(this.groupBox3_customResolution);
@@ -460,6 +484,8 @@
         private System.Windows.Forms.Button button8_launchDCS;
         private System.Windows.Forms.GroupBox groupBox3_customResolution;
         private System.Windows.Forms.GroupBox groupBox4_pickResolution;
+        private System.Windows.Forms.ComboBox comboBox2_monitorLuaPicker;
+        private System.Windows.Forms.Label label1_testLabel;
     }
 }
 

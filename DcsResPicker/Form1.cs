@@ -19,6 +19,27 @@ using System.Windows.Forms;
  * of the users option.lua. You can also enter and save custom resolutions.
  * 
  * Good program window size seems to be about (243, 361)
+ * 
+ * DReLa v1:
+ * Release
+ * 
+ * DReLa v2:
+ * -Removed resolution buttons
+ * Rearranged GUI
+ * Added list of resolutions
+ * User can now input multiple resolutions
+ * Multiple resolutions can be saved
+ * Added dropdown preset resolutions
+ * 
+ * DReLa v3:
+ * Added "Monitor.lua menu
+ * 
+ * will include "Monitor.lua" picking
+ * -determine the folder that should have the lua files in them. it should be one up from the bin folder and
+ * then two down into the Config then MonitorSetup folder.
+ * -After the location is established, populate a combo box with the .lua files present.
+ * -*if* the user choses a custom monitor lua, then run the alternate custom lua function.
+ * -the custom lua funchtion will have to cut in-between the width and height
  */
 
 //sources
@@ -53,6 +74,7 @@ namespace DcsResPicker
                 fullPath_optionsLua = file.ReadLine();//read the second line
                 textBox1_dcsPath.Text = fullPath_dcsExe;//put the first line in the first box
                 textBox2_optionsPath.Text = fullPath_optionsLua;//put the second line in the seecond box
+                setupMonitorLuaStuff();
 
                 while ((resolutionToLoad = file.ReadLine()) != null)//while the variable actually grabbed something from the file
                     {
@@ -109,6 +131,9 @@ namespace DcsResPicker
         string correctOptionsLuaCheck = "options.lua";
 
         string fullPath_dcsExe = string.Empty;
+        //string fullPath_monitorLuaFolder = string.Empty;
+        string fullPath_monitorLuaFolder;
+
 
         private void button1_selectDCS_Click(object sender, EventArgs e)
         {
@@ -126,12 +151,36 @@ namespace DcsResPicker
                     if (fullPath_dcsExe.Contains(correctDcsExeCheck))
                     {
                         textBox1_dcsPath.Text = fullPath_dcsExe;//put the chosen file in the box
+                        
+                        setupMonitorLuaStuff();//determine the monitor lua path here.
+
                     }
                     else {
                         MessageBox.Show("It looks like you did not select the correct file. Please try again.");
                         return; 
                     }
                 }
+            }
+        }
+
+        string[] monitorLuaPaths;
+        string monitorLuaFileName;
+        private void setupMonitorLuaStuff()
+        {//https://stackoverflow.com/questions/30991331/how-to-navigate-one-folder-up-from-current-file-path
+            var fullPath_monitorLuaFolderVar = Directory.GetParent(fullPath_dcsExe);//https://stackoverflow.com/questions/7827407/c-sharp-best-way-to-convert-dynamic-to-string
+            fullPath_monitorLuaFolder = Convert.ToString(fullPath_monitorLuaFolderVar);
+            fullPath_monitorLuaFolderVar = Directory.GetParent(fullPath_monitorLuaFolder);
+            fullPath_monitorLuaFolder = Convert.ToString(fullPath_monitorLuaFolderVar + "\\Config\\MonitorSetup");
+            //label1_testLabel.Text = fullPath_monitorLuaFolder;//debug
+
+            //https://www.youtube.com/watch?v=BmweB9TewPk
+            monitorLuaPaths = Directory.GetFiles(fullPath_monitorLuaFolder, "*.lua");
+
+            comboBox2_monitorLuaPicker.Items.Add(" No Change To Monitor Lua");//this allows the user to not chose a monitor lua
+            foreach (string filePath in monitorLuaPaths)
+            {
+                monitorLuaFileName = Path.GetFileName(filePath);
+                comboBox2_monitorLuaPicker.Items.Add(monitorLuaFileName);
             }
         }
 
@@ -163,11 +212,14 @@ namespace DcsResPicker
 
         int indexOfWidth;
         int indexOfHeight;
+        int indexOfMonitorLua;//technically called "multiMonitorSetup" in the lua file
         int indexOfCommaAfterWidth;
         int indexOfCommaAfterHeight;
+        int indexOfCommaAfterMonitorLua;//technically called "multiMonitorSetup" in the lua file
         string optionsLuaContents_region1; //the part from the start to height
-        string optionsLuaContents_region2; //the part from the height to width
-        string optionsLuaContents_region3; //the part from the width to end
+        string optionsLuaContents_region2; //the part from the height to multiMonitorSetup
+        string optionsLuaContents_region3; //the part from the multiMonitorSetup to width
+        string optionsLuaContents_region4; //the part from the width to end
         string newoptionsLuaContents;
         private void replaceWidthAndHeight()//if the user has a differently configured options.lua, this breaks
             //eg, if 'height' comes before 'width' or something.
@@ -181,7 +233,7 @@ namespace DcsResPicker
 
             //splits the options.lua into three chunks
             optionsLuaContents_region1 = optionsLuaContents.Substring(0, indexOfHeight);
-            optionsLuaContents_region2 = optionsLuaContents.Substring(indexOfCommaAfterHeight, indexOfWidth- indexOfCommaAfterHeight);
+            optionsLuaContents_region2 = optionsLuaContents.Substring(indexOfCommaAfterHeight, indexOfWidth - indexOfCommaAfterHeight);
             optionsLuaContents_region3 = optionsLuaContents.Substring(indexOfCommaAfterWidth);
 
             //merge and reconstruct the options.lua while inserting the new height and width. 
@@ -190,6 +242,42 @@ namespace DcsResPicker
             File.WriteAllText(fullPath_optionsLua, newoptionsLuaContents);//this is the command that actually creates the lua
 
             
+        }
+
+        private void replaceWidthAndHeightAndMonitorLua()//if the user has a differently configured options.lua, this breaks
+                                                         //eg, if 'height' comes before 'width' or something.
+                                                         //the order is start..height..multiMonitorSetup..width..end
+        {
+            optionsLuaContents = File.ReadAllText(fullPath_optionsLua);//reads the users options.lua
+            //find the index of 'height' and 'width' for future calculations
+            
+            indexOfHeight = optionsLuaContents.IndexOf("height");
+            indexOfCommaAfterHeight = optionsLuaContents.IndexOf(",", indexOfHeight + 1);
+
+            indexOfMonitorLua = optionsLuaContents.IndexOf("multiMonitorSetup");
+            indexOfCommaAfterMonitorLua = optionsLuaContents.IndexOf(",", indexOfMonitorLua + 1);
+
+            indexOfWidth = optionsLuaContents.IndexOf("width");
+            indexOfCommaAfterWidth = optionsLuaContents.IndexOf(",", indexOfWidth + 1);
+
+            //splits the options.lua into four chunks
+            optionsLuaContents_region1 = optionsLuaContents.Substring(0, indexOfHeight);
+
+            optionsLuaContents_region2 = optionsLuaContents.Substring(indexOfCommaAfterHeight, indexOfMonitorLua - indexOfCommaAfterHeight);
+            optionsLuaContents_region3 = optionsLuaContents.Substring(indexOfCommaAfterMonitorLua, indexOfWidth - indexOfCommaAfterMonitorLua);
+
+            optionsLuaContents_region4 = optionsLuaContents.Substring(indexOfCommaAfterWidth);
+
+            
+            //merge and reconstruct the options.lua while inserting the new height and width. \\region1 + heightString + heightValue + region2 + monitorLuaString + luaValue + region3 + widthString + widthValue + region4
+            newoptionsLuaContents = (optionsLuaContents_region1 + "height\"] = " + selectedHeight.ToString() + 
+                optionsLuaContents_region2 + "multiMonitorSetup\"] = " + "\"" + chosenMonitorLua.ToString() + "\"" +
+                optionsLuaContents_region3 + "width\"] = " + selectedWidth.ToString() +
+                optionsLuaContents_region4);
+
+            File.WriteAllText(fullPath_optionsLua, newoptionsLuaContents);//this is the command that actually creates the lua
+
+
         }
 
         string uniqueRes;
@@ -316,19 +404,22 @@ namespace DcsResPicker
 
         private void button5_help_Click(object sender, EventArgs e)//text for the relp / readmee
         {
-            MessageBox.Show("Hello and welcome to DCS Resolution Launcher (DReLa) v2." 
+            MessageBox.Show("Hello and welcome to DCS Resolution Launcher (DReLa) v3." 
                 + " This program creates and modifies files on your computer. If you are not ok with that, please do not use this utility."
                 + "\r\n" + "\r\n"
                 + "1. Select your DCS.exe file. It is likely located in C:\\Program Files\\Eagle Dynamics\\DCS World\\bin."
-                + "\r\n"
+                + "\r\n" + "\r\n"
                 + "2. Select your options.lua file. It is likely located in C:\\Users\\YOURNAME\\Saved Games\\DCS\\Config."
-                + "\r\n"
+                + "\r\n" + "\r\n"
                 + "3. Pick resolution. Or..."
-                + "\r\n"
+                + "\r\n" + "\r\n"
                 + "4. Enter a custom resolution and click 'Add Custom Resolution'."
-                + "\r\n"
+                + "\r\n" + "\r\n"
                 + "5. Click 'Launch DCS'. Right before DCS launches, DReLa will edit your 'options.lua' and save your settings in a text file in the location of this application." +
                 " The next time you run the program you won't have to set the DCS and 'options.lua' paths and your custom resolutions will be there for you."
+                + "\r\n" + "\r\n"
+                + "(Advanced/Experenced Users only) You can pick your 'Monitor.lua. DReLa will attempt to find the correct directory and will list the detected 'multiMonitorSetup' lua files." +
+                " This is completely optional and only intended for users who have a specific and known reason to use this feature (eg, they make a Monitor.lua that renders the GUI in a different location when using a certain resolution.)"
                 + "\r\n" + "\r\n"
                 + "Thank you to Captain Bird of the Hoggit Discord for the tips and idea for this utility. Thank you to those of the" +
                 " ED forums for the feedback. If you have any comments, concerns, wishes," +
@@ -340,7 +431,7 @@ namespace DcsResPicker
 
                 "If you would like to examine, follow, or add to DReLa, the git is here: https://github.com/asherao/DCS-Resolution-Launcher--DReLa-" +
 
-                "\r\n" + "\r\n" + "~Bailey" + "\r\n" + "29AUG2020");
+                "\r\n" + "\r\n" + "~Bailey" + "\r\n" + "09SEP2020");
         }
 
         private void button12_3840x2160_Click(object sender, EventArgs e)
@@ -448,6 +539,8 @@ namespace DcsResPicker
 
         string chosenRes;
         int indexOfX;
+        string chosenMonitorLua;
+        int chosenMonitorLuaLength;
 
         private void button8_launchDCS_Click(object sender, EventArgs e)//launches dcs after a few checks
         {
@@ -464,29 +557,65 @@ namespace DcsResPicker
 
             else
             {
-                //this section un-parses the selected resoluttion. It is read directly from the combobox
-                chosenRes = comboBox1_widthHeightRes.SelectedItem.ToString();
+                if (string.IsNullOrEmpty(comboBox2_monitorLuaPicker.Text) || (comboBox2_monitorLuaPicker.SelectedItem.Equals(" No Change To Monitor Lua")))
+                    {
+                    //if the user chose not to use a custom monitor.lua
+                    //this section un-parses the selected resolution. It is read directly from the combobox
+                    chosenRes = comboBox1_widthHeightRes.SelectedItem.ToString();
 
-                indexOfX = chosenRes.IndexOf("x");//the x character is what splits the numbers
-                selectedWidth = Convert.ToInt32(chosenRes.Substring(0, indexOfX - 1));//typical index math to select what i want
-                selectedHeight = Convert.ToInt32(chosenRes.Substring(indexOfX + 1));//typical index math to select what i want
+                    indexOfX = chosenRes.IndexOf("x");//the x character is what splits the numbers
+                    selectedWidth = Convert.ToInt32(chosenRes.Substring(0, indexOfX - 1));//typical index math to select what i want
+                    selectedHeight = Convert.ToInt32(chosenRes.Substring(indexOfX + 1));//typical index math to select what i want
 
-                //MessageBox.Show("|" + selectedWidth + "|" + selectedHeight + "|");
+                    //MessageBox.Show("|" + selectedWidth + "|" + selectedHeight + "|");
 
-                replaceWidthAndHeight();//modifies the options.lua
-                saveUserSettings();//after the file is written, save the settings
+                    replaceWidthAndHeight();//modifies the options.lua
+                    saveUserSettings();//after the file is written, save the settings
 
-                //this launches dcs
-                //https://stackoverflow.com/questions/7008647/running-exe-with-parameters/7008741
-                var proc = Process.Start(fullPath_dcsExe, "--force_disable_VR");//start the game in flatscreen
+                    //this launches dcs
+                    //https://stackoverflow.com/questions/7008647/running-exe-with-parameters/7008741
+                    var proc = Process.Start(fullPath_dcsExe, "--force_disable_VR");//start the game in flatscreen
 
-                exitProgram();//exit the program if the user left the checkbox checked
+                    exitProgram();//exit the program if the user left the checkbox checked
+                }
+                else
+                {//https://docs.microsoft.com/en-us/dotnet/api/system.io.path.getfilename?redirectedfrom=MSDN&view=netcore-3.1#System_IO_Path_GetFileName_System_String_
+                    //if the user chose to use a custom monitor.lua
+                    //this section un-parses the selected resolution. It is read directly from the combobox
+                    chosenRes = comboBox1_widthHeightRes.SelectedItem.ToString();
+
+                    indexOfX = chosenRes.IndexOf("x");//the x character is what splits the numbers
+                    selectedWidth = Convert.ToInt32(chosenRes.Substring(0, indexOfX - 1));//typical index math to select what i want
+                    selectedHeight = Convert.ToInt32(chosenRes.Substring(indexOfX + 1));//typical index math to select what i want
+
+                    //MessageBox.Show("|" + selectedWidth + "|" + selectedHeight + "|");
+
+                    chosenMonitorLua = comboBox2_monitorLuaPicker.SelectedItem.ToString();
+                    chosenMonitorLua = chosenMonitorLua.Substring(0, chosenMonitorLua.Length - 4);//removes the lst 4 characters of the lua file eg ".lua"
+
+
+                    replaceWidthAndHeightAndMonitorLua();//modifies the options.lua
+                    saveUserSettings();//after the file is written, save the settings
+
+                    //this launches dcs
+                    //https://stackoverflow.com/questions/7008647/running-exe-with-parameters/7008741
+                    var proc = Process.Start(fullPath_dcsExe, "--force_disable_VR");//start the game in flatscreen
+
+                    exitProgram();//exit the program if the user left the checkbox checked
+                
+                }
+                
             }
         }
 
         private void textBox6_customHeightEntry_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void comboBox2_monitorLuaPicker_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //label1_testLabel.Text = comboBox2_monitorLuaPicker.SelectedItem.ToString();//debuging
         }
     }
 }
