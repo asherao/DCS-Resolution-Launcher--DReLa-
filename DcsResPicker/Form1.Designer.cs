@@ -62,7 +62,7 @@
             this.groupBox3_customResolution = new System.Windows.Forms.GroupBox();
             this.groupBox4_pickResolution = new System.Windows.Forms.GroupBox();
             this.comboBox2_monitorLuaPicker = new System.Windows.Forms.ComboBox();
-            this.label1_testLabel = new System.Windows.Forms.Label();
+            this.label_selectMonitorLua = new System.Windows.Forms.Label();
             this.groupBox1_presetResolutions.SuspendLayout();
             this.groupBox2_customResolution.SuspendLayout();
             this.groupBox3_customResolution.SuspendLayout();
@@ -150,7 +150,7 @@
             this.groupBox1_presetResolutions.Controls.Add(this.button12_3840x2160);
             this.groupBox1_presetResolutions.Controls.Add(this.button11_2560x1080);
             this.groupBox1_presetResolutions.Controls.Add(this.button10_1920x1080);
-            this.groupBox1_presetResolutions.Location = new System.Drawing.Point(29, 433);
+            this.groupBox1_presetResolutions.Location = new System.Drawing.Point(9, 494);
             this.groupBox1_presetResolutions.Name = "groupBox1_presetResolutions";
             this.groupBox1_presetResolutions.Size = new System.Drawing.Size(217, 92);
             this.groupBox1_presetResolutions.TabIndex = 10;
@@ -398,28 +398,28 @@
             // 
             this.comboBox2_monitorLuaPicker.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2_monitorLuaPicker.FormattingEnabled = true;
-            this.comboBox2_monitorLuaPicker.Location = new System.Drawing.Point(9, 347);
+            this.comboBox2_monitorLuaPicker.Location = new System.Drawing.Point(9, 348);
             this.comboBox2_monitorLuaPicker.Name = "comboBox2_monitorLuaPicker";
             this.comboBox2_monitorLuaPicker.Size = new System.Drawing.Size(209, 21);
             this.comboBox2_monitorLuaPicker.Sorted = true;
             this.comboBox2_monitorLuaPicker.TabIndex = 23;
             this.comboBox2_monitorLuaPicker.SelectedIndexChanged += new System.EventHandler(this.comboBox2_monitorLuaPicker_SelectedIndexChanged);
             // 
-            // label1_testLabel
+            // label_selectMonitorLua
             // 
-            this.label1_testLabel.AutoSize = true;
-            this.label1_testLabel.Location = new System.Drawing.Point(6, 331);
-            this.label1_testLabel.Name = "label1_testLabel";
-            this.label1_testLabel.Size = new System.Drawing.Size(214, 13);
-            this.label1_testLabel.TabIndex = 26;
-            this.label1_testLabel.Text = "Select Monitor.Lua (If unsure, don\'t touch!!!)";
+            this.label_selectMonitorLua.AutoSize = true;
+            this.label_selectMonitorLua.Location = new System.Drawing.Point(6, 332);
+            this.label_selectMonitorLua.Name = "label_selectMonitorLua";
+            this.label_selectMonitorLua.Size = new System.Drawing.Size(214, 13);
+            this.label_selectMonitorLua.TabIndex = 26;
+            this.label_selectMonitorLua.Text = "Select Monitor.Lua (If unsure, don\'t touch!!!)";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(226, 380);
-            this.Controls.Add(this.label1_testLabel);
+            this.ClientSize = new System.Drawing.Size(226, 373);
+            this.Controls.Add(this.label_selectMonitorLua);
             this.Controls.Add(this.comboBox2_monitorLuaPicker);
             this.Controls.Add(this.label7_pickRes);
             this.Controls.Add(this.groupBox4_pickResolution);
@@ -485,7 +485,7 @@
         private System.Windows.Forms.GroupBox groupBox3_customResolution;
         private System.Windows.Forms.GroupBox groupBox4_pickResolution;
         private System.Windows.Forms.ComboBox comboBox2_monitorLuaPicker;
-        private System.Windows.Forms.Label label1_testLabel;
+        private System.Windows.Forms.Label label_selectMonitorLua;
     }
 }
 

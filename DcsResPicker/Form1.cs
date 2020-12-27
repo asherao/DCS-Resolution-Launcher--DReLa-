@@ -21,20 +21,24 @@ using System.Windows.Forms;
  * Good program window size seems to be about (243, 361)
  * 
  * DReLa v1:
- * Release
+ * -Release
  * 
  * DReLa v2:
  * -Removed resolution buttons
- * Rearranged GUI
- * Added list of resolutions
- * User can now input multiple resolutions
- * Multiple resolutions can be saved
- * Added dropdown preset resolutions
+ * -Rearranged GUI
+ * -Added list of resolutions
+ * -User can now input multiple resolutions
+ * -Multiple resolutions can be saved
+ * -Added dropdown preset resolutions
  * 
  * DReLa v3:
- * Added "Monitor.lua menu
+ * -Added "Monitor.lua" picker
  * 
- * will include "Monitor.lua" picking
+ * DReLa v4:
+ * -Add detection for monitor.lua files located in the Saved Games/DCS/Config/MonitorSetup folder (Thanks E!)
+ * 
+ * 
+ * Included "Monitor.lua" picking with v3
  * -determine the folder that should have the lua files in them. it should be one up from the bin folder and
  * then two down into the Config then MonitorSetup folder.
  * -After the location is established, populate a combo box with the .lua files present.
@@ -74,7 +78,10 @@ namespace DcsResPicker
                 fullPath_optionsLua = file.ReadLine();//read the second line
                 textBox1_dcsPath.Text = fullPath_dcsExe;//put the first line in the first box
                 textBox2_optionsPath.Text = fullPath_optionsLua;//put the second line in the seecond box
+                PreloadTheMonitorLuaFileDirectories();//this makes sure that the combo box will be populate when the
+                //user starts the program after the first time
                 setupMonitorLuaStuff();
+                
 
                 while ((resolutionToLoad = file.ReadLine()) != null)//while the variable actually grabbed something from the file
                     {
@@ -121,6 +128,31 @@ namespace DcsResPicker
             }
         }
 
+        private void PreloadTheMonitorLuaFileDirectories()
+        {
+            //yes, this code is copied from other locations
+            var fullPath_monitorLuaFolderVar = Directory.GetParent(fullPath_dcsExe);//https://stackoverflow.com/questions/7827407/c-sharp-best-way-to-convert-dynamic-to-string
+            fullPath_monitorLuaFolder = Convert.ToString(fullPath_monitorLuaFolderVar);
+            fullPath_monitorLuaFolderVar = Directory.GetParent(fullPath_monitorLuaFolder);
+            fullPath_monitorLuaFolder = Convert.ToString(fullPath_monitorLuaFolderVar + "\\Config\\MonitorSetup");
+            //label1_testLabel.Text = fullPath_monitorLuaFolder;//debug
+
+            if (Directory.Exists(fullPath_monitorLuaFolder)) //checks to make sure the folder exists
+            {
+                monitorLuaPaths = Directory.GetFiles(fullPath_monitorLuaFolder, "*.lua");//this gets the name of the files that end in ".lua"
+            }
+
+            var fullPath_monitorLuaFolder_savedGamesLocationVar = Directory.GetParent(fullPath_optionsLua);//https://stackoverflow.com/questions/7827407/c-sharp-best-way-to-convert-dynamic-to-string
+            fullPath_monitorLuaFolder_savedGamesLocation = Convert.ToString(fullPath_monitorLuaFolder_savedGamesLocationVar + "\\MonitorSetup");
+            //MessageBox.Show(fullPath_monitorLuaFolder_savedGamesLocation);//debugging
+
+            if (Directory.Exists(fullPath_monitorLuaFolder_savedGamesLocation)) //this is incase the user does not actually have this file
+            { 
+            monitorLuaPaths_savedGamesLocation = Directory.GetFiles(fullPath_monitorLuaFolder_savedGamesLocation, "*.lua");//this gets the name of the files that end in ".lua"
+                                                                                                                           //and puts them in an array called "monitorLuaPaths_savedGamesLocation"
+            }
+        }
+
         string appPath = Application.StartupPath;//gets the path of were the utility us running
         int selectedWidth;
         int selectedHeight;
@@ -133,6 +165,7 @@ namespace DcsResPicker
         string fullPath_dcsExe = string.Empty;
         //string fullPath_monitorLuaFolder = string.Empty;
         string fullPath_monitorLuaFolder;
+        string fullPath_monitorLuaFolder_savedGamesLocation;
 
 
         private void button1_selectDCS_Click(object sender, EventArgs e)
@@ -151,9 +184,22 @@ namespace DcsResPicker
                     if (fullPath_dcsExe.Contains(correctDcsExeCheck))
                     {
                         textBox1_dcsPath.Text = fullPath_dcsExe;//put the chosen file in the box
-                        
-                        setupMonitorLuaStuff();//determine the monitor lua path here.
 
+                                                                //idk why i had to use a "var", but i used it, then put it in a normal string. then i did the directory thing again to 
+                                                                //go up to the next folder level.
+                                                                //then i added config and monitor setup folders to go back down into where the monitor luas should be
+                        var fullPath_monitorLuaFolderVar = Directory.GetParent(fullPath_dcsExe);//https://stackoverflow.com/questions/7827407/c-sharp-best-way-to-convert-dynamic-to-string
+                        fullPath_monitorLuaFolder = Convert.ToString(fullPath_monitorLuaFolderVar);
+                        fullPath_monitorLuaFolderVar = Directory.GetParent(fullPath_monitorLuaFolder);
+                        fullPath_monitorLuaFolder = Convert.ToString(fullPath_monitorLuaFolderVar + "\\Config\\MonitorSetup");
+                        //label1_testLabel.Text = fullPath_monitorLuaFolder;//debug
+
+                        if (Directory.Exists(fullPath_monitorLuaFolder))//this should always exist due to the DCS filestructure, but just incase....
+                        {
+                            monitorLuaPaths = Directory.GetFiles(fullPath_monitorLuaFolder, "*.lua");//this gets the name of the files that end in ".lua"
+                        }
+                        //and puts them in an array called "monitorLuaPaths"
+                        setupMonitorLuaStuff();//determine the monitor lua path here.
                     }
                     else {
                         MessageBox.Show("It looks like you did not select the correct file. Please try again.");
@@ -163,26 +209,58 @@ namespace DcsResPicker
             }
         }
 
-        string[] monitorLuaPaths;
+        string[] monitorLuaPaths;//the array that the monitorLua combo box will use
         string monitorLuaFileName;
         private void setupMonitorLuaStuff()
         {//https://stackoverflow.com/questions/30991331/how-to-navigate-one-folder-up-from-current-file-path
-            var fullPath_monitorLuaFolderVar = Directory.GetParent(fullPath_dcsExe);//https://stackoverflow.com/questions/7827407/c-sharp-best-way-to-convert-dynamic-to-string
-            fullPath_monitorLuaFolder = Convert.ToString(fullPath_monitorLuaFolderVar);
-            fullPath_monitorLuaFolderVar = Directory.GetParent(fullPath_monitorLuaFolder);
-            fullPath_monitorLuaFolder = Convert.ToString(fullPath_monitorLuaFolderVar + "\\Config\\MonitorSetup");
-            //label1_testLabel.Text = fullPath_monitorLuaFolder;//debug
+            //idk why i had to use a "var", but i used it, then put it in a normal string. then i did the directory thing again to 
+            //go up to the next folder level.
+            //then i added config and monitor setup folders to go back down into where the monitor luas should be
+            //var fullPath_monitorLuaFolderVar = Directory.GetParent(fullPath_dcsExe);//https://stackoverflow.com/questions/7827407/c-sharp-best-way-to-convert-dynamic-to-string
+            //fullPath_monitorLuaFolder = Convert.ToString(fullPath_monitorLuaFolderVar);
+            //fullPath_monitorLuaFolderVar = Directory.GetParent(fullPath_monitorLuaFolder);
+            //fullPath_monitorLuaFolder = Convert.ToString(fullPath_monitorLuaFolderVar + "\\Config\\MonitorSetup");
+            ////label1_testLabel.Text = fullPath_monitorLuaFolder;//debug
 
             //https://www.youtube.com/watch?v=BmweB9TewPk
-            monitorLuaPaths = Directory.GetFiles(fullPath_monitorLuaFolder, "*.lua");
+            //if (customUserMonitorLuaFolderPath.Length > 3)//this (hopefully) means that a custom path was set, therefore use
+            //    //the user picked directory
+            //{
+            //    //monitorLuaPaths = Directory.GetFiles(customUserMonitorLuaFolderPath, "*.lua");//this gets the name of the files that end in ".lua"//this line has been moved
+
+            //}
+            //else
+            //{
+            //    //if the user did not select a custom location, this happens
+            //    //monitorLuaPaths = Directory.GetFiles(fullPath_monitorLuaFolder, "*.lua");//this gets the name of the files that end in ".lua"//this line has been moved
+            //}
+
+
+            comboBox2_monitorLuaPicker.Items.Clear();//this specifically addresses the occurance that the user selects a dcs.exe and then
+                                                     //selects dcs2.exe. In the old version, the old (dcs.exe) .lua list would have stayed.
 
             comboBox2_monitorLuaPicker.Items.Add(" No Change To Monitor Lua");//this allows the user to not chose a monitor lua
-            foreach (string filePath in monitorLuaPaths)
+
+            if (monitorLuaPaths != null)//if the array is NOT null, then it contains something, so continue
+            { 
+                foreach (string filePath in monitorLuaPaths)//for each file in the folder, do the below
+                {
+                    monitorLuaFileName = Path.GetFileName(filePath);//take the path out of the file name
+                    comboBox2_monitorLuaPicker.Items.Add(monitorLuaFileName);//then put the file name into the combobox list
+                }
+            }
+
+            if (monitorLuaPaths_savedGamesLocation != null)//if the array is NOT null, then it contains something, so continue
             {
-                monitorLuaFileName = Path.GetFileName(filePath);
-                comboBox2_monitorLuaPicker.Items.Add(monitorLuaFileName);
+                foreach (string filePath in monitorLuaPaths_savedGamesLocation)//for each file in the folder, do the below
+                {
+                    monitorLuaFileName = Path.GetFileName(filePath);//take the path out of the file name
+                    comboBox2_monitorLuaPicker.Items.Add(monitorLuaFileName);//then put the file name into the combobox list
+                }
             }
         }
+
+        string[] monitorLuaPaths_savedGamesLocation;
 
         string fullPath_optionsLua = string.Empty;
         private void button2_selectOptions_Click(object sender, EventArgs e)//same as dcs.exe., but for options.lua file
@@ -198,9 +276,25 @@ namespace DcsResPicker
                 {
                     //Get the path of specified file with the extenstion
                     fullPath_optionsLua = openFileDialog.FileName;
-                    if (fullPath_optionsLua.Contains(correctOptionsLuaCheck))
+                    if (fullPath_optionsLua.Contains(correctOptionsLuaCheck))//the file that the user picked was the correct one
                     {
                         textBox2_optionsPath.Text = fullPath_optionsLua;//put the chosen file in the box
+
+                        //the location of the Saved Games Monitor lua files is C:\Users\YOURNAME\Saved Games\DCS.openbeta\Config\MonitorSetup
+
+                        //idk why i had to use a "var", but i used it, then put it in a normal string. then i did the directory thing again to 
+                        //go up to the next folder level.
+                        //then i added config and monitor setup folders to go back down into where the monitor luas should be
+                        var fullPath_monitorLuaFolder_savedGamesLocationVar = Directory.GetParent(fullPath_optionsLua);//https://stackoverflow.com/questions/7827407/c-sharp-best-way-to-convert-dynamic-to-string
+                        fullPath_monitorLuaFolder_savedGamesLocation = Convert.ToString(fullPath_monitorLuaFolder_savedGamesLocationVar + "\\MonitorSetup");
+                        //MessageBox.Show(fullPath_monitorLuaFolder_savedGamesLocation);//debugging
+
+                        //make sure that the folder exists before trying to do something with it
+                        if (Directory.Exists(fullPath_monitorLuaFolder_savedGamesLocation)) {
+                            monitorLuaPaths_savedGamesLocation = Directory.GetFiles(fullPath_monitorLuaFolder_savedGamesLocation, "*.lua");//this gets the name of the files that end in ".lua"
+                                                                                                                                           //and puts them in an array called "monitorLuaPaths_savedGamesLocation"
+                        }
+                        setupMonitorLuaStuff();//determine the monitor lua path here.
                     }
                     else {
                         MessageBox.Show("It looks like you did not select the correct file. Please try again.");
@@ -240,16 +334,14 @@ namespace DcsResPicker
             newoptionsLuaContents = (optionsLuaContents_region1 + "height\"] = " + selectedHeight.ToString() + optionsLuaContents_region2 + "width\"] = " + selectedWidth.ToString() + optionsLuaContents_region3);
             
             File.WriteAllText(fullPath_optionsLua, newoptionsLuaContents);//this is the command that actually creates the lua
-
-            
         }
 
-        private void replaceWidthAndHeightAndMonitorLua()//if the user has a differently configured options.lua, this breaks
-                                                         //eg, if 'height' comes before 'width' or something.
-                                                         //the order is start..height..multiMonitorSetup..width..end
+        private void replaceWidthAndHeightAndMonitorLua()
+        //if the user has a differently configured options.lua, this breaks. eg, if 'height' comes before 'width' or something.
+        //the order is start..height..multiMonitorSetup..width..end
         {
             optionsLuaContents = File.ReadAllText(fullPath_optionsLua);//reads the users options.lua
-            //find the index of 'height' and 'width' for future calculations
+            //find the index of 'height' and 'width' for future calculations, and in this case, the monitor.lua name
             
             indexOfHeight = optionsLuaContents.IndexOf("height");
             indexOfCommaAfterHeight = optionsLuaContents.IndexOf(",", indexOfHeight + 1);
@@ -260,7 +352,7 @@ namespace DcsResPicker
             indexOfWidth = optionsLuaContents.IndexOf("width");
             indexOfCommaAfterWidth = optionsLuaContents.IndexOf(",", indexOfWidth + 1);
 
-            //splits the options.lua into four chunks
+            //splits the options.lua into four chunks using index magic
             optionsLuaContents_region1 = optionsLuaContents.Substring(0, indexOfHeight);
 
             optionsLuaContents_region2 = optionsLuaContents.Substring(indexOfCommaAfterHeight, indexOfMonitorLua - indexOfCommaAfterHeight);
@@ -269,15 +361,15 @@ namespace DcsResPicker
             optionsLuaContents_region4 = optionsLuaContents.Substring(indexOfCommaAfterWidth);
 
             
-            //merge and reconstruct the options.lua while inserting the new height and width. \\region1 + heightString + heightValue + region2 + monitorLuaString + luaValue + region3 + widthString + widthValue + region4
+            //merge and reconstruct the options.lua while inserting the new height, width, and moonitor lua file name. 
+            //region1 + heightString + heightValue + region2 + monitorLuaString + luaValue + region3 + widthString + widthValue + region4
+            //had to add the quotations for the monitor.lua bc thats how it is in the file
             newoptionsLuaContents = (optionsLuaContents_region1 + "height\"] = " + selectedHeight.ToString() + 
                 optionsLuaContents_region2 + "multiMonitorSetup\"] = " + "\"" + chosenMonitorLua.ToString() + "\"" +
                 optionsLuaContents_region3 + "width\"] = " + selectedWidth.ToString() +
                 optionsLuaContents_region4);
 
             File.WriteAllText(fullPath_optionsLua, newoptionsLuaContents);//this is the command that actually creates the lua
-
-
         }
 
         string uniqueRes;
@@ -285,6 +377,7 @@ namespace DcsResPicker
         {
             //export the 2 directories that the user choose to a .txt file
             //export all of the preset resolutions
+            //as of DReLa v3, the monitor.lua is not saved
 
             //https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/file-system/how-to-write-to-a-text-file
             //string[] exportLines = { fullPath_dcsExe, fullPath_optionsLua, customWidth, customHeight };
@@ -316,7 +409,6 @@ namespace DcsResPicker
             }
             else { return; }
         }
-
 
         private void button3_launchDCS_Click(object sender, EventArgs e)
         {
@@ -376,8 +468,6 @@ namespace DcsResPicker
             */
         }
 
-        
-
         private void textBox3_customWidth_KeyPress(object sender, KeyPressEventArgs e)
         {
             //numbers only
@@ -404,7 +494,7 @@ namespace DcsResPicker
 
         private void button5_help_Click(object sender, EventArgs e)//text for the relp / readmee
         {
-            MessageBox.Show("Hello and welcome to DCS Resolution Launcher (DReLa) v3." 
+            MessageBox.Show("Hello and welcome to DCS Resolution Launcher (DReLa) v4." 
                 + " This program creates and modifies files on your computer. If you are not ok with that, please do not use this utility."
                 + "\r\n" + "\r\n"
                 + "1. Select your DCS.exe file. It is likely located in C:\\Program Files\\Eagle Dynamics\\DCS World\\bin."
@@ -418,7 +508,7 @@ namespace DcsResPicker
                 + "5. Click 'Launch DCS'. Right before DCS launches, DReLa will edit your 'options.lua' and save your settings in a text file in the location of this application." +
                 " The next time you run the program you won't have to set the DCS and 'options.lua' paths and your custom resolutions will be there for you."
                 + "\r\n" + "\r\n"
-                + "(Advanced/Experenced Users only) You can pick your 'Monitor.lua. DReLa will attempt to find the correct directory and will list the detected 'multiMonitorSetup' lua files." +
+                + "(Advanced/Experenced Users only) You can pick your 'Monitor.lua. DReLa will attempt to find the correct dectories and will list the detected 'multiMonitorSetup' lua files." +
                 " This is completely optional and only intended for users who have a specific and known reason to use this feature (eg, they make a Monitor.lua that renders the GUI in a different location when using a certain resolution.)"
                 + "\r\n" + "\r\n"
                 + "Thank you to Captain Bird of the Hoggit Discord for the tips and idea for this utility. Thank you to those of the" +
@@ -431,7 +521,7 @@ namespace DcsResPicker
 
                 "If you would like to examine, follow, or add to DReLa, the git is here: https://github.com/asherao/DCS-Resolution-Launcher--DReLa-" +
 
-                "\r\n" + "\r\n" + "~Bailey" + "\r\n" + "09SEP2020");
+                "\r\n" + "\r\n" + "~Bailey" + "\r\n" + "DEC2020");
         }
 
         private void button12_3840x2160_Click(object sender, EventArgs e)
@@ -540,7 +630,6 @@ namespace DcsResPicker
         string chosenRes;
         int indexOfX;
         string chosenMonitorLua;
-        int chosenMonitorLuaLength;
 
         private void button8_launchDCS_Click(object sender, EventArgs e)//launches dcs after a few checks
         {
@@ -590,7 +679,7 @@ namespace DcsResPicker
 
                     //MessageBox.Show("|" + selectedWidth + "|" + selectedHeight + "|");
 
-                    chosenMonitorLua = comboBox2_monitorLuaPicker.SelectedItem.ToString();
+                    chosenMonitorLua = comboBox2_monitorLuaPicker.SelectedItem.ToString();//puts the contents of the combo box into a variable
                     chosenMonitorLua = chosenMonitorLua.Substring(0, chosenMonitorLua.Length - 4);//removes the lst 4 characters of the lua file eg ".lua"
 
 
@@ -602,9 +691,7 @@ namespace DcsResPicker
                     var proc = Process.Start(fullPath_dcsExe, "--force_disable_VR");//start the game in flatscreen
 
                     exitProgram();//exit the program if the user left the checkbox checked
-                
                 }
-                
             }
         }
 
