@@ -35,7 +35,7 @@ using System.Windows.Forms;
  * -Added "Monitor.lua" picker
  * 
  * DReLa v4:
- * -Add detection for monitor.lua files located in the Saved Games/DCS/Config/MonitorSetup folder (Thanks E!)
+ * -Added detection for monitor.lua files located in the Saved Games/DCS/Config/MonitorSetup folder (Thanks E!)
  * 
  * 
  * Included "Monitor.lua" picking with v3
