@@ -4,7 +4,7 @@ their DCS resolution without launching DCS twice.
 
 Have you ever launched DCS to only realize that you launched it in the wrong resolution for whatever reason? Mabye testing, or you are on a different monitor, or you don’t feel like using triple screen today? Well, this is the utility for you! Launch DReLa, choose your resolution and go!
 
-Hello and welcome to DCS Resolution Launcher (DReLa) v1.
+Hello and welcome to DCS Resolution Launcher (DReLa).
 This program creates and modifies files on your computer. If you are not ok with that, please do not use this utility.
 1. Select your DCS.exe file. It is usually located in C:\Install Location\DCS World\bin
 2. Select your options.lua file. It is usually located in C:\Users\YOURNAME\Saved Games\DCS\Config. 
@@ -21,4 +21,4 @@ If you would like to examine, follow, or add to DReLa, the github is here: https
 
 ~Bailey
 
-29AUG2020
+DEC2020
