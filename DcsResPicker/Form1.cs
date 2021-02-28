@@ -16,7 +16,8 @@ using System.Windows.Forms;
  * to choose the game resolution right before the game launches. Created for mission makers,
  * those who want to play on a different screen, or those who simply want to change
  * their DCS resolution without launching DCS twice. It modifies the 'width' and 'height' values
- * of the users option.lua. You can also enter and save custom resolutions.
+ * of the users option.lua. You can also enter and save custom resolutions. 
+ * Launching DCS in VR is also an option.
  * 
  * Good program window size seems to be about (243, 361)
  * 
@@ -37,13 +38,24 @@ using System.Windows.Forms;
  * DReLa v4:
  * -Added detection for monitor.lua files located in the Saved Games/DCS/Config/MonitorSetup folder (Thanks E!)
  * 
+ * DReLa v5:
+ * -Added "Launch DCS VR" button (Thanks CombatWombat!)
+ * -DReLa remembers the last resolution used
+ * -DReLa saves after you add a custom resolution 
+ * -Added GitHub and Donate buttons
+ * -Other minor QoL improvements 
  * 
+ * Future features:
+ * -Read the monitor that is currently set in the options.lua and populate the dropdown menu with that.
+ * 
+ * Notes:
  * Included "Monitor.lua" picking with v3
  * -determine the folder that should have the lua files in them. it should be one up from the bin folder and
  * then two down into the Config then MonitorSetup folder.
  * -After the location is established, populate a combo box with the .lua files present.
  * -*if* the user choses a custom monitor lua, then run the alternate custom lua function.
  * -the custom lua funchtion will have to cut in-between the width and height
+ * -1280 x 768 seems to be DCCS's minimum reasonable resolution with the game GUI in mind
  */
 
 //sources
@@ -88,7 +100,7 @@ namespace DcsResPicker
                     if (resolutionToLoad.Equals(""))//if it grabbed an 'enter' character (should only happen if the user did odd things)
                     {
                         //this exclusvely protects against there being blank lines after line 2 of the save file
-                        comboBox1_widthHeightRes.Items.Add("1280 x 720");
+                        comboBox1_widthHeightRes.Items.Add("1280 x 768");
                         comboBox1_widthHeightRes.Items.Add("1920 x 1080");
                         comboBox1_widthHeightRes.Items.Add("2560 x 1080");
                         comboBox1_widthHeightRes.Items.Add("2560 x 1440");
@@ -109,7 +121,7 @@ namespace DcsResPicker
 
                 if (numberOfLinesInSaveFile  < 3)//less than 3 lines means that there should be no resolutions saved
                 {
-                    comboBox1_widthHeightRes.Items.Add("1280 x 720");
+                    comboBox1_widthHeightRes.Items.Add("1280 x 768");
                     comboBox1_widthHeightRes.Items.Add("1920 x 1080");
                     comboBox1_widthHeightRes.Items.Add("2560 x 1080");
                     comboBox1_widthHeightRes.Items.Add("2560 x 1440");
@@ -120,12 +132,15 @@ namespace DcsResPicker
            else//this else is for the event that there was no file to load
             {
                 //comboBox1_widthHeightRes.Items.Add("");
-                comboBox1_widthHeightRes.Items.Add("1280 x 720");
+                comboBox1_widthHeightRes.Items.Add("1280 x 768");
                 comboBox1_widthHeightRes.Items.Add("1920 x 1080");
                 comboBox1_widthHeightRes.Items.Add("2560 x 1080");
                 comboBox1_widthHeightRes.Items.Add("2560 x 1440");
                 comboBox1_widthHeightRes.Items.Add("3840 x 2160");
             }
+            numberOfCustomResolutions = Convert.ToInt32(comboBox1_widthHeightRes.Items.Count.ToString());//counts the number of res in the combobox
+            comboBox1_widthHeightRes.SelectedIndex = numberOfCustomResolutions - 1;//selects the last res, which should be
+                //the one that the user just entered. Note the '- 1'. That is because the index itself is 0 based. 
         }
 
         private void PreloadTheMonitorLuaFileDirectories()
@@ -373,6 +388,7 @@ namespace DcsResPicker
         }
 
         string uniqueRes;
+        string chosenResAtLaunch;
         private void saveUserSettings()
         {
             //export the 2 directories that the user choose to a .txt file
@@ -392,10 +408,23 @@ namespace DcsResPicker
                 foreach(object listOfSingleRes in comboBox1_widthHeightRes.Items)//for each of the item in the combobox
                     //do this loop
                 {
+                    //we want to put the selected resolution last in the list so that it can be selected first when the
+                    //application starts. Odd logic, yes. I know.
+                  
                     uniqueRes = listOfSingleRes.ToString();//put the resolution in a variable
-                    sw.WriteLine(uniqueRes);//write the contents of the variable to the .txt
-                    //because of the 'for each' this will then move to the next object in the list and continue
+
+                    if (uniqueRes.Equals(comboBox1_widthHeightRes.SelectedItem))
+                    {
+                        chosenResAtLaunch = uniqueRes;
+                    }
+                    else
+                    {
+                        sw.WriteLine(uniqueRes);//write the contents of the variable to the .txt
+                                                //because of the 'for each' this will then move to the next object in the list and continue
+                    }
+
                 }
+                sw.WriteLine(chosenResAtLaunch);//adds the last picked res to the end of the file
             }
         }
 
@@ -472,16 +501,28 @@ namespace DcsResPicker
         {
             //numbers only
             //https://ourcodeworld.com/articles/read/507/how-to-allow-only-numbers-inside-a-textbox-in-winforms-c-sharp
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.'))
+            //if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.'))
+            //{
+            //    e.Handled = true;
+            //}
+
+            if (!char.IsNumber(e.KeyChar) && e.KeyChar != '.')
             {
                 e.Handled = true;
             }
+
+           
         }
 
         private void textBox4_customHeight_KeyPress(object sender, KeyPressEventArgs e)
         {
             //numbers only
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.'))
+            //if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && (e.KeyChar != '.'))
+            //{
+            //    e.Handled = true;
+            //}
+
+            if (!char.IsNumber(e.KeyChar) && e.KeyChar != '.')
             {
                 e.Handled = true;
             }
@@ -494,16 +535,16 @@ namespace DcsResPicker
 
         private void button5_help_Click(object sender, EventArgs e)//text for the relp / readmee
         {
-            MessageBox.Show("Hello and welcome to DCS Resolution Launcher (DReLa) v4." 
+            MessageBox.Show("Hello and welcome to DCS Resolution Launcher (DReLa) v5." 
                 + " This program creates and modifies files on your computer. If you are not ok with that, please do not use this utility."
                 + "\r\n" + "\r\n"
-                + "1. Select your DCS.exe file. It is likely located in C:\\Program Files\\Eagle Dynamics\\DCS World\\bin."
+                + "1. Select your DCS.exe file. It is likely located in 'C:\\Program Files\\Eagle Dynamics\\DCS World\\bin'."
                 + "\r\n" + "\r\n"
-                + "2. Select your options.lua file. It is likely located in C:\\Users\\YOURNAME\\Saved Games\\DCS\\Config."
+                + "2. Select your options.lua file. It is likely located in 'C:\\Users\\YOURNAME\\Saved Games\\DCS\\Config'."
                 + "\r\n" + "\r\n"
-                + "3. Pick resolution. Or..."
+                + "3. If you want to launch DCS in VR, click the 'Launch DCS VR' button."
                 + "\r\n" + "\r\n"
-                + "4. Enter a custom resolution and click 'Add Custom Resolution'."
+                + "4. If you want to launch DCS in flatscreen, pick a resolution or enter a custom resolution and click 'Add Custom Resolution'. DReLa will save your resolution and file locations you picked earlier."
                 + "\r\n" + "\r\n"
                 + "5. Click 'Launch DCS'. Right before DCS launches, DReLa will edit your 'options.lua' and save your settings in a text file in the location of this application." +
                 " The next time you run the program you won't have to set the DCS and 'options.lua' paths and your custom resolutions will be there for you."
@@ -521,7 +562,7 @@ namespace DcsResPicker
 
                 "If you would like to examine, follow, or add to DReLa, the git is here: https://github.com/asherao/DCS-Resolution-Launcher--DReLa-" +
 
-                "\r\n" + "\r\n" + "~Bailey" + "\r\n" + "DEC2020");
+                "\r\n" + "\r\n" + "~Bailey" + "\r\n" + "FEB2021");
         }
 
         private void button12_3840x2160_Click(object sender, EventArgs e)
@@ -594,22 +635,62 @@ namespace DcsResPicker
         int numberOfCustomResolutions;
         private void button6_addCustomResToList_Click(object sender, EventArgs e)//adds the user enter custom res to the combobox
         {
-            if (textBox5_customWidthEntry.TextLength > 1 && textBox6_customHeightEntry.TextLength > 1)//if the user entry is more than 1 digit
+            //check to see if the user entered the locations
+            if (String.IsNullOrEmpty(fullPath_dcsExe) || String.IsNullOrEmpty(fullPath_optionsLua))//check if the values are set
+            {
+                MessageBox.Show("It looks like you did not select the correct DCS Path and options.lua. Please try again.");
+                return;
+            }
+            if (comboBox1_widthHeightRes.Text.Length == 0)//if the combobox is empty, eg, a ras has not been selected
+            {
+                MessageBox.Show("Please select an acceptable resolution width and height.");
+                return;
+            }
+
+            else
             {
                 userCustomResWidth = textBox5_customWidthEntry.Text;
                 userCustomResHeight = textBox6_customHeightEntry.Text;
-                comboBox1_widthHeightRes.Items.Add(userCustomResWidth + " x " + userCustomResHeight);//adds the user res to the combobox
 
-                numberOfCustomResolutions = Convert.ToInt32(comboBox1_widthHeightRes.Items.Count.ToString());//counts the number of res in the combobox
-                comboBox1_widthHeightRes.SelectedIndex = numberOfCustomResolutions - 1;//selects the last res, which should be
-                //the one that the user just entered. Note the '- 1'. That is because the index itself is 0 based. 
+                string theRequestedResolutionEntry = (userCustomResWidth + " x " + userCustomResHeight);
 
-                textBox5_customWidthEntry.Text = "";//sets the windows to blank to let the user know it worked
-                textBox6_customHeightEntry.Text = "";//sets the windows to blank to let the user know it worked
-            }
-            else
-            {
-                MessageBox.Show("Please enter a higher resolution.");//this happens if the user enters a 1 digit resolution
+
+                if (userCustomResHeight.Length > 1 && //prevents single digit entries
+                    userCustomResHeight.Length > 1 && //prevents single digit entries
+                    !userCustomResWidth.Contains(".") && //error checks for decimals 
+                    !userCustomResHeight.Contains(".") && //error checks for decimals
+                    Convert.ToInt32(userCustomResWidth) > 9 && //makes sure the number is more than 9
+                    Convert.ToInt32(userCustomResHeight) > 9) //makes sure the number is more than 9
+                {
+                    if (comboBox1_widthHeightRes.Items.Contains(theRequestedResolutionEntry))
+                    {
+                        comboBox1_widthHeightRes.Items.Remove(userCustomResWidth + " x " + userCustomResHeight);
+                        comboBox1_widthHeightRes.Items.Add(userCustomResWidth + " x " + userCustomResHeight);
+                    }
+                    else
+                    {
+                        comboBox1_widthHeightRes.Items.Add(userCustomResWidth + " x " + userCustomResHeight);//adds the user res to the combobox
+                    }
+
+                    numberOfCustomResolutions = Convert.ToInt32(comboBox1_widthHeightRes.Items.Count.ToString());//counts the number of res in the combobox
+                    comboBox1_widthHeightRes.SelectedIndex = numberOfCustomResolutions - 1;//selects the last res, which should be
+                                                                                           //the one that the user just entered. Note the '- 1'. That is because the index itself is 0 based. 
+
+                    textBox5_customWidthEntry.Text = "";//sets the windows to blank to let the user know it worked
+                    textBox6_customHeightEntry.Text = "";//sets the windows to blank to let the user know it worked
+                    saveUserSettings();//save the resolutions and the filepaths
+                }
+
+                else if (textBox5_customWidthEntry.Text.ToString().Contains(".") ||
+                    textBox6_customHeightEntry.Text.ToString().Contains("."))
+                {
+                    MessageBox.Show("Please remove the dots from the entered resolution.");//this happens if the user enters a dot
+                }
+
+                else
+                {
+                    MessageBox.Show("Please enter a higher resolution.");//this happens if the user enters a 1 digit resolution
+                }
             }
         }
 
@@ -623,7 +704,14 @@ namespace DcsResPicker
             }
             else
             {
+                //remove the resolution
                 comboBox1_widthHeightRes.Items.Remove(comboBox1_widthHeightRes.SelectedItem);
+                //select a new resolution to prevent a space, which will then result in extra resolutions being added on next load
+                numberOfCustomResolutions = Convert.ToInt32(comboBox1_widthHeightRes.Items.Count.ToString());//counts the number of res in the combobox
+                comboBox1_widthHeightRes.SelectedIndex = numberOfCustomResolutions - 1;//selects the last res
+                //Note the '- 1'. That is because the index itself is 0 based. 
+
+
             }
         }
 
@@ -703,6 +791,36 @@ namespace DcsResPicker
         private void comboBox2_monitorLuaPicker_SelectedIndexChanged(object sender, EventArgs e)
         {
             //label1_testLabel.Text = comboBox2_monitorLuaPicker.SelectedItem.ToString();//debuging
+        }
+
+        private void button8_launchDCS_VR_Click(object sender, EventArgs e)
+        {
+            if (String.IsNullOrEmpty(fullPath_dcsExe) || String.IsNullOrEmpty(fullPath_optionsLua))//check if the values are set
+            {
+                MessageBox.Show("It looks like you did not select the correct DCS Path and options.lua. Please try again.");
+                return;
+            }
+            
+            saveUserSettings();
+            var proc = Process.Start(fullPath_dcsExe, "--force_enable_VR");//start the game in flatscreen
+
+            exitProgram();//exit the program if the user left the checkbox checked
+        }
+
+        private void button_GitHub_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/asherao/DCS-Resolution-Launcher--DReLa-");
+        }
+
+        private void button_donate_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://www.paypal.com/paypalme/asherao");
+        }
+
+       //TODO: Get the tooltips working
+        private void toolTip_DcsLocation_Popup(object sender, PopupEventArgs e)
+        {
+            toolTip_DcsLocation.SetToolTip(button1_selectDCS, "Select DCS.exe"); 
         }
     }
 }

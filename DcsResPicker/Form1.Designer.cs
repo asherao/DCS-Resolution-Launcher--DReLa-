@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.label1_dcsPath = new System.Windows.Forms.Label();
             this.label2_optionsPath = new System.Windows.Forms.Label();
@@ -63,6 +64,10 @@
             this.groupBox4_pickResolution = new System.Windows.Forms.GroupBox();
             this.comboBox2_monitorLuaPicker = new System.Windows.Forms.ComboBox();
             this.label_selectMonitorLua = new System.Windows.Forms.Label();
+            this.button8_launchDCS_VR = new System.Windows.Forms.Button();
+            this.button_GitHub = new System.Windows.Forms.Button();
+            this.button_donate = new System.Windows.Forms.Button();
+            this.toolTip_DcsLocation = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox1_presetResolutions.SuspendLayout();
             this.groupBox2_customResolution.SuspendLayout();
             this.groupBox3_customResolution.SuspendLayout();
@@ -95,7 +100,7 @@
             this.button1_selectDCS.Location = new System.Drawing.Point(9, 10);
             this.button1_selectDCS.Name = "button1_selectDCS";
             this.button1_selectDCS.Size = new System.Drawing.Size(100, 23);
-            this.button1_selectDCS.TabIndex = 3;
+            this.button1_selectDCS.TabIndex = 1;
             this.button1_selectDCS.Text = "Select DCS.exe";
             this.button1_selectDCS.UseVisualStyleBackColor = true;
             this.button1_selectDCS.Click += new System.EventHandler(this.button1_selectDCS_Click);
@@ -105,7 +110,7 @@
             this.button2_selectOptions.Location = new System.Drawing.Point(9, 41);
             this.button2_selectOptions.Name = "button2_selectOptions";
             this.button2_selectOptions.Size = new System.Drawing.Size(100, 23);
-            this.button2_selectOptions.TabIndex = 4;
+            this.button2_selectOptions.TabIndex = 2;
             this.button2_selectOptions.Text = "Select options.lua";
             this.button2_selectOptions.UseVisualStyleBackColor = true;
             this.button2_selectOptions.Click += new System.EventHandler(this.button2_selectOptions_Click);
@@ -116,7 +121,8 @@
             this.textBox1_dcsPath.Name = "textBox1_dcsPath";
             this.textBox1_dcsPath.ReadOnly = true;
             this.textBox1_dcsPath.Size = new System.Drawing.Size(100, 20);
-            this.textBox1_dcsPath.TabIndex = 5;
+            this.textBox1_dcsPath.TabIndex = 99;
+            this.textBox1_dcsPath.TabStop = false;
             // 
             // textBox2_optionsPath
             // 
@@ -124,7 +130,8 @@
             this.textBox2_optionsPath.Name = "textBox2_optionsPath";
             this.textBox2_optionsPath.ReadOnly = true;
             this.textBox2_optionsPath.Size = new System.Drawing.Size(100, 20);
-            this.textBox2_optionsPath.TabIndex = 6;
+            this.textBox2_optionsPath.TabIndex = 99;
+            this.textBox2_optionsPath.TabStop = false;
             // 
             // textBox4_customHeight
             // 
@@ -258,9 +265,9 @@
             this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox1.Location = new System.Drawing.Point(9, 303);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(148, 17);
-            this.checkBox1.TabIndex = 14;
-            this.checkBox1.Text = "Close DReLa after launch";
+            this.checkBox1.Size = new System.Drawing.Size(152, 17);
+            this.checkBox1.TabIndex = 13;
+            this.checkBox1.Text = "Close DReLa after Launch";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // button5_help
@@ -268,7 +275,7 @@
             this.button5_help.Location = new System.Drawing.Point(9, 274);
             this.button5_help.Name = "button5_help";
             this.button5_help.Size = new System.Drawing.Size(209, 23);
-            this.button5_help.TabIndex = 15;
+            this.button5_help.TabIndex = 12;
             this.button5_help.Text = "Help / Readmee";
             this.button5_help.UseVisualStyleBackColor = true;
             this.button5_help.Click += new System.EventHandler(this.button5_help_Click);
@@ -280,7 +287,7 @@
             this.comboBox1_widthHeightRes.Location = new System.Drawing.Point(31, 19);
             this.comboBox1_widthHeightRes.Name = "comboBox1_widthHeightRes";
             this.comboBox1_widthHeightRes.Size = new System.Drawing.Size(150, 21);
-            this.comboBox1_widthHeightRes.TabIndex = 16;
+            this.comboBox1_widthHeightRes.TabIndex = 4;
             // 
             // label6_customHeightEntry
             // 
@@ -297,7 +304,7 @@
             this.textBox5_customWidthEntry.MaxLength = 5;
             this.textBox5_customWidthEntry.Name = "textBox5_customWidthEntry";
             this.textBox5_customWidthEntry.Size = new System.Drawing.Size(53, 20);
-            this.textBox5_customWidthEntry.TabIndex = 16;
+            this.textBox5_customWidthEntry.TabIndex = 7;
             this.textBox5_customWidthEntry.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox5_customWidthEntry_KeyPress);
             // 
             // label5_customWidthEntry
@@ -315,7 +322,7 @@
             this.textBox6_customHeightEntry.MaxLength = 5;
             this.textBox6_customHeightEntry.Name = "textBox6_customHeightEntry";
             this.textBox6_customHeightEntry.Size = new System.Drawing.Size(53, 20);
-            this.textBox6_customHeightEntry.TabIndex = 17;
+            this.textBox6_customHeightEntry.TabIndex = 8;
             this.textBox6_customHeightEntry.TextChanged += new System.EventHandler(this.textBox6_customHeightEntry_TextChanged);
             this.textBox6_customHeightEntry.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBox6_customHeightEntry_KeyPress);
             // 
@@ -334,7 +341,7 @@
             this.button6_addCustomResToList.Location = new System.Drawing.Point(34, 61);
             this.button6_addCustomResToList.Name = "button6_addCustomResToList";
             this.button6_addCustomResToList.Size = new System.Drawing.Size(147, 23);
-            this.button6_addCustomResToList.TabIndex = 21;
+            this.button6_addCustomResToList.TabIndex = 9;
             this.button6_addCustomResToList.Text = "Add Custom Resolution";
             this.button6_addCustomResToList.UseVisualStyleBackColor = true;
             this.button6_addCustomResToList.Click += new System.EventHandler(this.button6_addCustomResToList_Click);
@@ -353,7 +360,7 @@
             this.button7_addCustomResToList.Location = new System.Drawing.Point(31, 46);
             this.button7_addCustomResToList.Name = "button7_addCustomResToList";
             this.button7_addCustomResToList.Size = new System.Drawing.Size(150, 23);
-            this.button7_addCustomResToList.TabIndex = 22;
+            this.button7_addCustomResToList.TabIndex = 5;
             this.button7_addCustomResToList.Text = "Delete Selected Resolution";
             this.button7_addCustomResToList.UseVisualStyleBackColor = true;
             this.button7_addCustomResToList.Click += new System.EventHandler(this.button7_addCustomResToList_Click);
@@ -362,8 +369,8 @@
             // 
             this.button8_launchDCS.Location = new System.Drawing.Point(9, 245);
             this.button8_launchDCS.Name = "button8_launchDCS";
-            this.button8_launchDCS.Size = new System.Drawing.Size(209, 23);
-            this.button8_launchDCS.TabIndex = 23;
+            this.button8_launchDCS.Size = new System.Drawing.Size(100, 23);
+            this.button8_launchDCS.TabIndex = 10;
             this.button8_launchDCS.Text = "Launch DCS";
             this.button8_launchDCS.UseVisualStyleBackColor = true;
             this.button8_launchDCS.Click += new System.EventHandler(this.button8_launchDCS_Click);
@@ -379,7 +386,7 @@
             this.groupBox3_customResolution.Location = new System.Drawing.Point(9, 150);
             this.groupBox3_customResolution.Name = "groupBox3_customResolution";
             this.groupBox3_customResolution.Size = new System.Drawing.Size(209, 89);
-            this.groupBox3_customResolution.TabIndex = 24;
+            this.groupBox3_customResolution.TabIndex = 6;
             this.groupBox3_customResolution.TabStop = false;
             this.groupBox3_customResolution.Text = "Custom Resolution";
             // 
@@ -390,7 +397,7 @@
             this.groupBox4_pickResolution.Location = new System.Drawing.Point(9, 69);
             this.groupBox4_pickResolution.Name = "groupBox4_pickResolution";
             this.groupBox4_pickResolution.Size = new System.Drawing.Size(209, 75);
-            this.groupBox4_pickResolution.TabIndex = 25;
+            this.groupBox4_pickResolution.TabIndex = 3;
             this.groupBox4_pickResolution.TabStop = false;
             this.groupBox4_pickResolution.Text = "Pick Resolution";
             // 
@@ -398,6 +405,7 @@
             // 
             this.comboBox2_monitorLuaPicker.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2_monitorLuaPicker.FormattingEnabled = true;
+            this.comboBox2_monitorLuaPicker.ItemHeight = 13;
             this.comboBox2_monitorLuaPicker.Location = new System.Drawing.Point(9, 348);
             this.comboBox2_monitorLuaPicker.Name = "comboBox2_monitorLuaPicker";
             this.comboBox2_monitorLuaPicker.Size = new System.Drawing.Size(209, 21);
@@ -414,11 +422,49 @@
             this.label_selectMonitorLua.TabIndex = 26;
             this.label_selectMonitorLua.Text = "Select Monitor.Lua (If unsure, don\'t touch!!!)";
             // 
+            // button8_launchDCS_VR
+            // 
+            this.button8_launchDCS_VR.Location = new System.Drawing.Point(118, 245);
+            this.button8_launchDCS_VR.Name = "button8_launchDCS_VR";
+            this.button8_launchDCS_VR.Size = new System.Drawing.Size(100, 23);
+            this.button8_launchDCS_VR.TabIndex = 11;
+            this.button8_launchDCS_VR.Text = "Launch DCS VR";
+            this.button8_launchDCS_VR.UseVisualStyleBackColor = true;
+            this.button8_launchDCS_VR.Click += new System.EventHandler(this.button8_launchDCS_VR_Click);
+            // 
+            // button_GitHub
+            // 
+            this.button_GitHub.Location = new System.Drawing.Point(9, 375);
+            this.button_GitHub.Name = "button_GitHub";
+            this.button_GitHub.Size = new System.Drawing.Size(100, 23);
+            this.button_GitHub.TabIndex = 14;
+            this.button_GitHub.Text = "GitHub Code";
+            this.button_GitHub.UseVisualStyleBackColor = true;
+            this.button_GitHub.Click += new System.EventHandler(this.button_GitHub_Click);
+            // 
+            // button_donate
+            // 
+            this.button_donate.Location = new System.Drawing.Point(118, 375);
+            this.button_donate.Name = "button_donate";
+            this.button_donate.Size = new System.Drawing.Size(100, 23);
+            this.button_donate.TabIndex = 15;
+            this.button_donate.Text = "Donate";
+            this.button_donate.UseVisualStyleBackColor = true;
+            this.button_donate.Click += new System.EventHandler(this.button_donate_Click);
+            // 
+            // toolTip_DcsLocation
+            // 
+            this.toolTip_DcsLocation.ShowAlways = true;
+            this.toolTip_DcsLocation.Popup += new System.Windows.Forms.PopupEventHandler(this.toolTip_DcsLocation_Popup);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(226, 373);
+            this.ClientSize = new System.Drawing.Size(226, 402);
+            this.Controls.Add(this.button_donate);
+            this.Controls.Add(this.button_GitHub);
+            this.Controls.Add(this.button8_launchDCS_VR);
             this.Controls.Add(this.label_selectMonitorLua);
             this.Controls.Add(this.comboBox2_monitorLuaPicker);
             this.Controls.Add(this.label7_pickRes);
@@ -486,6 +532,10 @@
         private System.Windows.Forms.GroupBox groupBox4_pickResolution;
         private System.Windows.Forms.ComboBox comboBox2_monitorLuaPicker;
         private System.Windows.Forms.Label label_selectMonitorLua;
+        private System.Windows.Forms.Button button8_launchDCS_VR;
+        private System.Windows.Forms.Button button_GitHub;
+        private System.Windows.Forms.Button button_donate;
+        public System.Windows.Forms.ToolTip toolTip_DcsLocation;
     }
 }
 
